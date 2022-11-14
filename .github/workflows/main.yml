@@ -1,4 +1,4 @@
-name: KommatiParaClients
+name: KommatiParaClients application build
 on: [push]
   #push:
   #  branches: [ "main" ]
@@ -31,7 +31,8 @@ jobs:
       run: |
         check-wheel-contents ./dist/KommatiParaClients*
     - name: Download artifact from build job
-      uses: actions/download-artifact@v3
+      #uses: actions/download-artifact@v3
+      uses: actions/upload-artifact@v3
       with:
         name: KommatiParaClients
-        path: .
+        path: ./dist/KommatiParaClients*
