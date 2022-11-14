@@ -30,4 +30,5 @@ jobs:
         python3 setup.py bdist_wheel
     - name: Check distribution file
       run: |
+        pip install check-wheel-contents
         check-wheel-contents KommatiParaClients
