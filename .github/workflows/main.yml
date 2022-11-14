@@ -1,4 +1,4 @@
-name: KommatiParaClients application build
+name: KommatiParaClients
 on: [push]
   #push:
   #  branches: [ "main" ]
@@ -19,16 +19,19 @@ jobs:
         #python -m pip install --upgrade pip
         #pip install pytest pyspark
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        ls -la ./
+        pip install wheel setuptools check-wheel-contents
     - name: Test with pytest
       run: |
         echo "Koniec"
         #pytest
     - name: Create distribution file
       run: |
-        pip install wheel setuptools
         python3 setup.py bdist_wheel
     - name: Check distribution file
       run: |
-        pip install check-wheel-contents
         check-wheel-contents ./dist/KommatiParaClients*
+    - name: Download artifact from build job
+      uses: actions/download-artifact@v3
+      with:
+        name: KommatiParaClients
+        path: .
