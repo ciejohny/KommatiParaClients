@@ -31,4 +31,4 @@ jobs:
     - name: Check distribution file
       run: |
         pip install check-wheel-contents
-        check-wheel-contents KommatiParaClients
+        check-wheel-contents ./dist/KommatiParaClients*
