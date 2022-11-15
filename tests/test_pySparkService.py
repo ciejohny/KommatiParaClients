@@ -11,7 +11,7 @@ spark = (SparkSession.builder.master("local").appName("chispa").getOrCreate())
 
 
 @pytest.fixture
-def df1() -> DataFrame:
+def df_cli_det() -> DataFrame:
     data_cl = [
         (1, "a1", "b1", "a1.b1@zzz.com", "Netherlands"),
         (2, "a2", "b2", "a2.b2@zzz.com", "Netherlands"),
@@ -27,7 +27,7 @@ def df1() -> DataFrame:
 
 
 @pytest.fixture
-def df2() -> DataFrame:
+def df_cli_trn() -> DataFrame:
     data_cl = [
         (1, "sdasd1", "visa", 123),
         (1, "asd098", "visa", 345),
@@ -46,7 +46,7 @@ def df2() -> DataFrame:
 #    assert_df_equality(df1, df2)
 
 
-def test_filter_dataframe(df1: DataFrame) -> None:
+def test_filter_dataframe(df_cli_det: DataFrame) -> None:
     expected_data = [
         (1, "a1", "b1", "a1.b1@zzz.com", "Netherlands"),
         (2, "a2", "b2", "a2.b2@zzz.com", "Netherlands"),
@@ -57,13 +57,13 @@ def test_filter_dataframe(df1: DataFrame) -> None:
         ["id", "first_name", "last_name", "email", "country"]
         )
     assert_df_equality(
-        pySparkService.filter_dataframe(df1, 'Netherlands'),
+        pySparkService.filter_dataframe(df_cli_det, 'Netherlands'),
         expected_df,
         ignore_row_order=True
         )
 
 
-def test_join_dataframe(df1: DataFrame, df2: DataFrame) -> None:
+def test_join_dataframe(df_cli_det: DataFrame, df_cli_trn: DataFrame) -> None:
     expected_data = [
         (1, "a1.b1@zzz.com", "sdasd1", "visa"),
         (1, "a1.b1@zzz.com", "asd098", "visa"),
@@ -77,11 +77,35 @@ def test_join_dataframe(df1: DataFrame, df2: DataFrame) -> None:
         )
     assert_df_equality(
         pySparkService.join_dataframe(
-            df1,
-            df2,
+            df_cli_det,
+            df_cli_trn,
             'id',
             'inner',
             ["id", "email", "btc_a", "cc_t"]),
+        expected_df,
+        ignore_row_order=True,
+        ignore_column_order=True
+        )
+
+
+def test_rename_columns(df_cli_trn: DataFrame) -> None:
+    expected_data = [
+        (1, "sdasd1", "visa", 123),
+        (1, "asd098", "visa", 345),
+        (2, "2dasas", "mastercard", 565),
+        (3, "4asdas", "san", 765),
+        (4, "5gfbfg", "mastercard", 222),
+        (7, "sfsd54", "mastercard", 987)
+    ]
+    expected_df = spark.createDataFrame(
+        expected_data,
+        ["id", "bitcoin_address", "credit_card_type", "cc_n"]
+        )
+    assert_df_equality(
+        pySparkService.rename_columns(
+            df_cli_trn,
+            {'btc_a': 'bitcoin_address', 'cc_t': 'credit_card_type'}
+            ),
         expected_df,
         ignore_row_order=True,
         ignore_column_order=True
