@@ -22,7 +22,7 @@ jobs:
         pip install wheel setuptools check-wheel-contents
     - name: Test with pytest
       run: |
-        pytest
+        python -m pytest --import-mode=append tests/
     - name: Create distribution file
       run: |
         python3 setup.py bdist_wheel
