@@ -7,7 +7,6 @@ KommatiParaClients provides clients details for additional operations.
 
 
 to do:
-- tests
-- requirements.txt
 - dynamic versioning
-- documentation generation with Sphinx
+- finish configuration generation
+-
