@@ -6,7 +6,7 @@ Execution requires 3 parameters:
  - client details details csv file
  - client transactions in csv file
  - country name for filtering 
- - 
+ 
 [Github](https://github.com/ciejohny/KommatiParaClients)
 
 
