@@ -1,16 +1,19 @@
 # pySparkService.py
 
+import sys
 import logging
 from pyspark.sql import SparkSession
 from pyspark.sql import DataFrame
-from KommatiParaClients.log import *
+from KommatiParaClients.log import log_init
+import KommatiParaClients.utils as utils
 
 
 """ log_file = "application.log"
 create_log(log_file)
-logger = logging.getLogger('ApplicationLog')"""
-
+logger = logging.getLogger('ApplicationLog')
+"""
 logger = log_init()
+spark = utils.get_spark()
 
 
 def load_data_frame(data_location: str) -> DataFrame:
@@ -25,9 +28,10 @@ def load_data_frame(data_location: str) -> DataFrame:
             inferSchema=True,
             header=True
             )
-        logger.info("Data loaded from "+data_location)
+        logger.info("Data loaded to DataFrame from "+data_location)
         return df
     except Exception as e:
+        # to implement dedicated error for IO
         logger.error("Data not loaded from " + data_location)
         logger.error(str(e))
         raise
@@ -42,7 +46,7 @@ def unload_data_frame(df: DataFrame, data_location: str) -> None:
             option("delimiter", ",").mode('overwrite').csv(data_location)
         logger.info(
             "Data unloaded (" + str(df.count()) + " rows) to "
-            + data_location + "folder"
+            + data_location + " folder"
             )
     except Exception as e:
         logger.error("Data not unloaded to " + data_location)
@@ -53,7 +57,10 @@ def unload_data_frame(df: DataFrame, data_location: str) -> None:
 def drop_columns(data_location: str) -> DataFrame:
     """
     This function drops columns from datarame
+    Not implemented because for exercise purpose dataset deleivered
+    without need of such operation
     """
+    raise NotImplementedError
 
 
 def rename_columns(df: DataFrame, col_mapping: dict) -> DataFrame:
@@ -62,6 +69,7 @@ def rename_columns(df: DataFrame, col_mapping: dict) -> DataFrame:
     """
     for key, value in col_mapping.items():
         df = df.withColumnRenamed(key, value)
+    logger.info("Columns renamed based on mapping "+str(col_mapping))
     return df
     # return df.toDF(*cols)
 
@@ -76,11 +84,13 @@ def join_dataframe(
     """
     This function joins dataframes and provides selected columns
     """
+    logger.info("DataFrames "+join_type+" joining based on: "+join_key)
     if col_list:
-        return driver_df.join(joined_df, on='id', how='inner') \
+        logger.info("Limiting joined DataFrame to column list"+str(col_list))
+        return driver_df.join(joined_df, on=join_key, how=join_type) \
             .select(col_list)
     else:
-        return driver_df.join(joined_df, on='id', how='inner')
+        return driver_df.join(joined_df, on=join_key, how=join_type)
 
 
 def filter_dataframe(
@@ -91,9 +101,8 @@ def filter_dataframe(
     """
     This function filters data in dataframe
     """
+    logger.info(
+        "DataFrame filtered based on column: " + filter_col_name +
+        " with value '" + filter_val + "'"
+        )
     return df.filter(df[filter_col_name] == filter_val)
-
-
-spark = SparkSession.builder.master("local[1]") \
-    .appName("Client filter") \
-    .getOrCreate()
