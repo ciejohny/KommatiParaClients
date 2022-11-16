@@ -19,5 +19,3 @@ with open(r"configurations.ini", 'w') as configfileObj:
     config_file.write(configfileObj)
     configfileObj.flush()
     configfileObj.close()
-
-print("Config file created")

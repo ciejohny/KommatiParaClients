@@ -22,14 +22,7 @@ def create_log(path: str):
         backupCount=3
         )
     file_handler.setFormatter(format)
-    '''
-    file_handler = TimedRotatingFileHandler(path,
-                                       when=config['Logger']['when'],
-                                       interval=config['Logger']['interval'],
-                                       backupCount=config['Logger']['backupcount'])
-    '''
     logger.addHandler(file_handler)
-
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(format)
     logger.addHandler(console_handler)
