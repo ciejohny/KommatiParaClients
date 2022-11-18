@@ -34,7 +34,10 @@ def clients_df(input_params: dict) -> None:
 
     # rename column names
     rencol_df = pySparkService.rename_columns(
-        joined_df, {'id': 'client_identifier', 'btc_a': 'bitcoin_address'}
+        joined_df,
+        {'id': 'client_identifier',
+            'btc_a': 'bitcoin_address',
+            'cc_t': 'credit_card_type'}
         )
 
     # unload to file
