@@ -24,3 +24,4 @@ def args() -> dict:
         required=True
         )
     return vars(parser.parse_args())
+
